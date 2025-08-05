@@ -1,6 +1,9 @@
 package org.acme.kafka;
 
+import io.quarkus.logging.Log;
+
 import org.acme.kafka.quarkus.Movie;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.jboss.logging.Logger;
@@ -16,8 +19,14 @@ public class MovieResource {
     @Channel("movies")
     Emitter<Movie> emitter;
 
+    @ConfigProperty(name = "kafka.bootstrap.servers")
+    String kafkaBootstrapServers;
+
     @POST
     public Response enqueueMovie(Movie movie) {
+        //this should be the bootstrap URL from DevService.
+        //XXX  But it's from io.quarkus.test.kafka.KafkaCompanionResource#start
+        Log.info("Bootstrap Url: " + kafkaBootstrapServers);
         LOGGER.infof("Sending movie %s to Kafka", movie.getTitle());
         emitter.send(movie);
         return Response.accepted().build();
