@@ -9,7 +9,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import io.apicurio.registry.serde.avro.AvroKafkaDeserializer;
 import io.apicurio.registry.serde.avro.AvroKafkaSerializer;
 import io.quarkus.test.common.WithTestResource;
-import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.kafka.InjectKafkaCompanion;
 import io.quarkus.test.kafka.KafkaCompanionResource;
@@ -17,7 +16,6 @@ import io.restassured.http.ContentType;
 import io.smallrye.reactive.messaging.kafka.companion.ConsumerTask;
 import io.smallrye.reactive.messaging.kafka.companion.KafkaCompanion;
 
-import java.net.URI;
 import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
@@ -36,6 +34,17 @@ public class MovieWithKafkaCompanionTest {
 
     @InjectKafkaCompanion
     KafkaCompanion kafkaCompanion;
+
+// XXX: with this workaround the test "works" (in the sense that it passes),
+// XXX: this should be done in io.quarkus.test.kafka.KafkaCompanionResource.setIntegrationTestContext
+//    @BeforeEach
+//    void workaround_avroConfigForCompanion() {
+//        String apicurioUrl =
+//                ConfigProvider.getConfig().getValue("mp.messaging.connector.smallrye-kafka.apicurio.registry.url", String.class);
+//        kafkaCompanion.setCommonClientConfig(
+//                Map.of("apicurio.registry.url", apicurioUrl, "apicurio.registry.auto-register", "true", "schema.registry.url",
+//                        apicurioUrl));
+//    }
 
     @Test
     public void consumeWithCompanion() {
